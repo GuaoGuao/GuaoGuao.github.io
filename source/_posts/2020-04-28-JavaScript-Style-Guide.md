@@ -688,3 +688,201 @@ const binary = 2 ** 10;
       +    inventorOf: ['coxcomb chart', 'modern nursing'],
       };
 ```
+
+## 分号
+
+  尽量在语句结束加入分号，ES中有[Automatic Semicolon Insertion](https://tc39.es/ecma262/#sec-automatic-semicolon-insertion)的机制，会在代码中断前插入一个分号到代码中。 但是，ASI 包含了一些奇怪的行为，如果 JavaScript 错误的解释了你的换行符，你的代码将会中断。 
+
+## 类型转换和强制类型转换
+
+* 字符类型
+
+```JavaScript
+      // => this.reviewScore = 9;
+
+      // bad
+      const totalScore = new String(this.reviewScore); // typeof totalScore is "object" not "string"
+
+      // bad
+      const totalScore = this.reviewScore + ''; // invokes this.reviewScore.valueOf()
+
+      // bad
+      const totalScore = this.reviewScore.toString(); // isn’t guaranteed to return a string
+
+      // good
+      const totalScore = String(this.reviewScore);
+```
+* 数字类型
+
+```JavaScript
+      const inputValue = '4';
+
+      // bad
+      const val = new Number(inputValue);
+
+      // bad
+      const val = +inputValue;
+
+      // bad
+      const val = inputValue >> 0;
+
+      // bad
+      const val = parseInt(inputValue);
+
+      // good
+      const val = Number(inputValue);
+
+      // good
+      const val = parseInt(inputValue, 10);
+```
+
+## 命名规范
+
+* 避免单字母的名字。用你的命名来描述功能
+
+```JavaScript
+      // bad
+      function q() {
+        // ...
+      }
+
+      // good
+      function query() {
+        // ...
+      }
+```
+
+* 文件名应该和默认导出的名称完全匹配。
+
+```JavaScript
+      // file 1 contents
+      class CheckBox {
+        // ...
+      }
+      export default CheckBox;
+
+      // file 2 contents
+      export default function fortyTwo() { return 42; }
+
+      // file 3 contents
+      export default function insideDirectory() {}
+
+      // in some other file
+      // bad
+      import CheckBox from './checkBox'; // PascalCase import/export, camelCase filename
+      import FortyTwo from './FortyTwo'; // PascalCase import/filename, camelCase export
+      import InsideDirectory from './InsideDirectory'; // PascalCase import/filename, camelCase export
+
+      // bad
+      import CheckBox from './check_box'; // PascalCase import/export, snake_case filename
+      import forty_two from './forty_two'; // snake_case import/filename, camelCase export
+      import inside_directory from './inside_directory'; // snake_case import, camelCase export
+      import index from './inside_directory/index'; // requiring the index file explicitly
+      import insideDirectory from './insideDirectory/index'; // requiring the index file explicitly
+
+      // good
+      import CheckBox from './CheckBox'; // PascalCase export/import/filename
+      import fortyTwo from './fortyTwo'; // camelCase export/import/filename
+      import insideDirectory from './insideDirectory'; // camelCase export/import/directory name/implicit "index"
+      // ^ supports both insideDirectory.js and insideDirectory/index.js
+```
+
+* 当你导出默认函数时使用驼峰命名法。 你的文件名应该和方法名相同。
+
+* 当你导出一个构造器 / 类 / 单例 / 函数库 / 暴露的对象时应该使用帕斯卡命名法。
+
+* 缩略词和缩写都必须是全部大写或者全部小写。
+
+```JavaScript
+      // bad
+      import SmsContainer from './containers/SmsContainer';
+
+      // bad
+      const HttpRequests = [
+        // ...
+      ];
+
+      // good
+      import SMSContainer from './containers/SMSContainer';
+
+      // good
+      const HTTPRequests = [
+        // ...
+      ];
+
+      // also good
+      const httpRequests = [
+        // ...
+      ];
+
+      // best
+      import TextMessageContainer from './containers/TextMessageContainer';
+
+      // best
+      const requests = [
+        // ...
+      ];
+```
+
+* 你可以大写一个常量，如果它：（1）被导出，（2）使用 const 定义（不能被重新赋值），（3）程序员可以信任它（以及其嵌套的属性）是不变的。
+
+## JQuery
+
+* 对于 jQuery 对象的变量使用 $ 作为前缀。
+
+```JavaScript
+      // bad
+      const sidebar = $('.sidebar');
+
+      // good
+      const $sidebar = $('.sidebar');
+
+      // good
+      const $sidebarBtn = $('.sidebar-btn');
+```
+
+* 缓存 jQuery 查询。
+
+```JavaScript
+      // bad
+      function setSidebar() {
+        $('.sidebar').hide();
+
+        // ...
+
+        $('.sidebar').css({
+          'background-color': 'pink',
+        });
+      }
+
+      // good
+      function setSidebar() {
+        const $sidebar = $('.sidebar');
+        $sidebar.hide();
+
+        // ...
+
+        $sidebar.css({
+          'background-color': 'pink',
+        });
+      }
+```
+
+* 对于有作用域的 jQuery 对象查询使用 find
+
+```JavaScript
+      // bad
+      $('ul', '.sidebar').hide();
+
+      // bad
+      $('.sidebar').find('ul').hide();
+
+      // good
+      $('.sidebar ul').hide();
+
+      // good
+      $('.sidebar > ul').hide();
+
+      // good
+      $sidebar.find('ul').hide();
+```
